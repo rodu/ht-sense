@@ -1,10 +1,10 @@
 {
 	"folders": [
 		{
-			"path": "apps/ht-sense"
+			"path": "app"
 		},
 		{
-			"path": "board/ht-sense"
+			"path": "board"
 		}
 	],
 	"settings": {}
