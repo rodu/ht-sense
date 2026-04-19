@@ -7,22 +7,7 @@ This is a hobby project for learning Arduino and data visualization.
 
 ## Project Organization
 
-The project is organised in three parts:
-
-* arduino
-* client
-* MQTT broker
-
-### Arduino
-
-The arduino folder contains the source for the Arduino sketch to work with
-HT sensor and collect data.
-
-The project is using the PlatformIO IDE (in VSCode).
-
-### Client
-
-The client is a web application using the Lit library to render components.
+The solution is a client side web application using the Lit library to render components.
 
 Mostly the application presents a simple dashboard based
 on the EChart.js library (https://echarts.apache.org/) to create a gauge component
