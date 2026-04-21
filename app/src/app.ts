@@ -2,8 +2,8 @@ import { LitElement, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import './components/ht-reading';
 
-@customElement('my-element')
-class MyElement extends LitElement {
+@customElement('ht-sense')
+class App extends LitElement {
   render() {
     return html`<ht-reading></ht-reading>`;
   }
@@ -11,6 +11,6 @@ class MyElement extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'my-element': MyElement;
+    'ht-sense': App;
   }
 }
