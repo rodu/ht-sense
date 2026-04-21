@@ -1,35 +1,17 @@
-export interface IUser {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  department: string;
-  jobTitle: string;
-}
+import { interval, map, Observable, take } from 'rxjs';
+import type { SensorReading } from '../types/sensor-reading';
 
 export class ApiService {
   constructor() {
     console.log('ApiService contructor called');
   }
 
-  public async loadUsers(): Promise<IUser[]> {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(mockData), 500);
-    });
+  public streamSensorData(): Observable<SensorReading> {
+    return interval(1000).pipe(
+      take(sensorData.length),
+      map((index) => sensorData[index])
+    );
   }
-}
-
-interface SensorReading {
-  // A UUID value
-  id: string;
-  // A unix timestamp
-  timestamp: number;
-  // value with 2 decimal places
-  temperatureCelsius: number;
-  // value with 2 decimal places
-  temperatureFarenaith: number;
-  // value with 2 decimal places
-  humidity: number;
 }
 
 const sensorData: SensorReading[] = [
