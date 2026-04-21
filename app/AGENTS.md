@@ -160,16 +160,16 @@ npm run test        # Run all tests once
 npm run test:watch  # Re-run on file changes
 ```
 
-Test files are co-located with components and named `*.test.ts`. The WTR config is `web-test-runner.config.js`.
+Test files live in `test/` subfolders under component paths (for example, `src/components/test/user-detail.test.ts`) and are named `*.test.ts`. WTR discovers tests via `src/**/test/**/*.test.ts` from `web-test-runner.config.js`.
 
 ### Required Import Order in Test Files
 
-`src/test/setup.ts` **must be the very first import** in every test file. It bootstraps `reflect-metadata` and the DI container, and pre-registers all injectable services before any component module is evaluated:
+`src/test/setup.ts` **must be the very first import** in every test file. For tests in component `test/` folders, import it as `../../test/setup`. It bootstraps `reflect-metadata` and the DI container, and pre-registers all injectable services before any component module is evaluated:
 
 ```ts
-import '../test/setup'; // MUST be first
+import '../../test/setup'; // MUST be first
 import { fixture, html, expect, elementUpdated } from '@open-wc/testing';
-import './my-component';
+import '../my-component';
 ```
 
 ### Why setup.ts Must Come First
@@ -193,10 +193,10 @@ Container.instance.registerInstance(MyService, new MyService());
 Tests use Mocha (`describe`/`it`) and Chai assertions. Use `@open-wc/testing` helpers to render components and interact with them:
 
 ```ts
-import '../test/setup';
+import '../../test/setup';
 import { fixture, html, expect, elementUpdated } from '@open-wc/testing';
-import './my-component';
-import type { MyComponent } from './my-component';
+import '../my-component';
+import type { MyComponent } from '../my-component';
 
 describe('MyComponent', () => {
   it('renders correctly', async () => {

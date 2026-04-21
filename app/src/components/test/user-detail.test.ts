@@ -1,10 +1,10 @@
-import '../test/setup'; // bootstrap DI before any component import
+import '../../test/setup'; // bootstrap DI before any component import
 import { fixture, html, expect, elementUpdated } from '@open-wc/testing';
 import { EventAggregator } from 'aurelia-event-aggregator';
 import { Container } from 'aurelia-dependency-injection';
-import './user-detail';
-import type { UserDetail } from './user-detail';
-import type { IUser } from '../services/api-service';
+import '../user-detail';
+import type { UserDetail } from '../user-detail';
+import type { IUser } from '../../services/api-service';
 
 const mockUser: IUser = {
   id: 'test-1',

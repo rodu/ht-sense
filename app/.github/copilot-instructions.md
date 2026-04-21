@@ -139,16 +139,16 @@ class MyComponent extends LitElement {
 
 Tests use `@web/test-runner` (WTR) running in real Chromium via Playwright. TypeScript for tests is compiled with `@rollup/plugin-typescript` rather than esbuild, because esbuild does not support `emitDecoratorMetadata`. The test setup is separate from the Vite build.
 
-Test files are co-located with components and named `*.test.ts`. The WTR config file is `web-test-runner.config.js`.
+Test files live in `test/` subfolders under component paths (for example, `src/components/test/user-detail.test.ts`) and are named `*.test.ts`. The WTR config file is `web-test-runner.config.js` and discovers tests with `src/**/test/**/*.test.ts`.
 
 ### Required Import Order In Tests
 
-`src/test/setup.ts` must be the very first import in every test file:
+`src/test/setup.ts` must be the very first import in every test file. For tests in component `test/` folders, import it as `../../test/setup`:
 
 ```ts
-import '../test/setup'; // MUST be first
+import '../../test/setup'; // MUST be first
 import { fixture, html, expect, elementUpdated } from '@open-wc/testing';
-import './my-component';
+import '../my-component';
 ```
 
 ### Why `setup.ts` Must Come First

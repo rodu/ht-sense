@@ -3,7 +3,7 @@ import { rollupAdapter } from '@web/dev-server-rollup';
 import typescript from '@rollup/plugin-typescript';
 
 export default {
-  files: 'src/**/*.test.ts',
+  files: 'src/**/test/**/*.test.ts',
   nodeResolve: true,
   browsers: [playwrightLauncher({ product: 'chromium' })],
   plugins: [

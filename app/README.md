@@ -150,7 +150,7 @@ The following `tsconfig.json` settings are required and must not be removed:
 
 Tests run in a real Chromium browser (via Playwright) using [`@web/test-runner`](https://modern-web.dev/docs/test-runner/overview/). TypeScript is compiled by `@rollup/plugin-typescript` rather than esbuild, because esbuild does not support `emitDecoratorMetadata` — which Aurelia's DI requires.
 
-Test files are co-located with components and named `*.test.ts`.
+Test files live in a `test/` subfolder under component paths (for example, `src/components/test/user-detail.test.ts`) and are named `*.test.ts`.
 
 ### Running tests
 
