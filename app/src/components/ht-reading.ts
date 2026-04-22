@@ -1,13 +1,17 @@
 import { LitElement, html } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 import { Subscription } from 'rxjs';
 import { instance } from '../core/decorators';
 import { ApiService } from '../services/api-service';
+import type { SensorReading } from '../types/sensor-reading';
+import './gauge';
 
 @customElement('ht-reading')
 export class HtReading extends LitElement {
   @instance({ type: ApiService })
   private apiService!: ApiService;
+
+  @state() private reading: SensorReading | null = null;
 
   private sensorStreamSubscription: Subscription | null = null;
 
@@ -17,7 +21,7 @@ export class HtReading extends LitElement {
     this.sensorStreamSubscription = this.apiService
       .streamSensorData()
       .subscribe((reading) => {
-        console.log('Sensor reading:', reading);
+        this.reading = reading;
       });
   }
 
@@ -29,7 +33,7 @@ export class HtReading extends LitElement {
   }
 
   render() {
-    return html`<div>Listening for sensor readings...</div>`;
+    return html`<ht-gauge .reading=${this.reading}></ht-gauge>`;
   }
 }
 
