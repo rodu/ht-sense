@@ -1,6 +1,12 @@
 // Import all of Bootstrap's CSS via Sass modules.
 @use 'bootstrap/scss/bootstrap';
 
+/* Show it is fixed to the top */
+body {
+  min-height: 75rem;
+  padding-top: 4.5rem;
+}
+
 .bd-placeholder-img {
   font-size: 1.125rem;
   text-anchor: middle;
