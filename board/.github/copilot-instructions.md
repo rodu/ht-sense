@@ -11,9 +11,17 @@ board/
   src/
     main.cpp              # Thin entry point — wires modules, no logic
   lib/
+    logger/               # Cross-cutting: allocation-free serial logger
+      logger.h
+      logger.cpp
+    sensor_reading/       # Cross-cutting: shared SensorReading struct (header-only)
+      sensor_reading.h
     data_mode/
       data_mode.h
       data_mode.cpp
+    nc_handler/
+      nc_handler.h
+      nc_handler.cpp
     file_naming/
       file_naming.h
       file_naming.cpp
@@ -24,7 +32,11 @@ board/
       config_parser.h
       config_parser.cpp
   test/
+    test_logger/          # native env — pure logic, no Arduino APIs
+      test_main.cpp
     test_data_mode/       # native env — pure logic, no Arduino APIs
+      test_main.cpp
+    test_nc_handler/      # native env — pure logic, no Arduino APIs
       test_main.cpp
     test_file_naming/     # native env — pure logic, no Arduino APIs
       test_main.cpp
@@ -45,7 +57,10 @@ Two environments are defined in `platformio.ini`:
 
 | Module | Responsibility |
 |---|---|
+| `logger` | Allocation-free, level-filtered logger with injectable sink. Global `Log` instance used by all modules. Configure once in `setup()` with a Serial sink. |
+| `sensor_reading` | Header-only `SensorReading` struct (temperature, humidity, timestamp). Shared across all mode handlers. |
 | `data_mode` | Parse `DATA_MODE` config value; compute capability flags and offline fallback |
+| `nc_handler` | NC mode handler — discards every reading, emits a DEBUG log, counts discards |
 | `file_naming` | Generate 8.3-safe SD card paths and filenames from timestamps |
 | `sync_checkpoint` | Serialise/deserialise the last-synced file path and byte offset |
 | `config_parser` | Parse `.env` key-value text into a config struct |
