@@ -93,6 +93,18 @@ Two environments are defined in `platformio.ini`:
 - Credentials (WiFi, API tokens) are stored in plain text by default. For production, consider using EEPROM or encrypted storage for sensitive values.
 - On startup, the firmware loads the `.env` file and applies configuration. If the file is missing or malformed, the system falls back to safe defaults and logs an error.
 
+## Running Tests
+
+After every code change, run the native test suite to verify nothing is broken:
+
+```shell
+~/.platformio/penv/bin/pio test -e native --project-dir /path/to/board
+```
+
+(`pio` is not on `$PATH` by default — use the full path above, or activate the PlatformIO virtual environment first.)
+
+All 106 tests must pass before a change is considered complete. On-board tests (`-e uno_r4_wifi`) require connected hardware and are run separately.
+
 ## Unit Testing Framework & Organization
 
 - All modules must include unit tests to verify correctness.
