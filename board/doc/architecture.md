@@ -4,7 +4,7 @@
 
 HT-Sense is an Arduino Uno R4 WiFi firmware that reads humidity and temperature
 from a sensor and manages that data according to a configurable _data mode_.
-The mode is set in a `.env` file on the SD card and controls whether readings
+The mode is set in a `config.json` file on the SD card and controls whether readings
 are discarded, stored locally, synced to a remote endpoint, streamed live over
 MQTT, or a combination of those.
 
@@ -30,7 +30,7 @@ board/
     nc_handler/           # NC mode — discard readings, log, count
     file_naming/          # Generate 8.3-safe SD paths from timestamps
     sync_checkpoint/      # Track last-synced file and byte offset
-    config_parser/        # Parse .env key=value text into a config struct
+    config_parser/        # Parse config.json into an AppConfig struct
   test/
     test_logger/          # native env
     test_data_mode/       # native env
@@ -107,7 +107,7 @@ Current wiring (as of initial implementation):
 Serial.begin(115200);
 Log.setSink([](const char *line) { Serial.println(line); });
 Log.setLevel(LogLevel::INFO); // default; overridden by applyConfig()
-applyConfig();                // reads SD .env → applies LOG_LEVEL + DATA_MODE
+applyConfig();                // reads SD config.json → applies logLevel + dataMode
 
 // loop()
 SensorReading reading = { /* from sensor */ };
@@ -117,34 +117,46 @@ switch (activeMode) {
 }
 ```
 
-`applyConfig()` opens `/.env` (falling back to `/config/.env`) from the SD card,
-passes the text to `ConfigParser::findValue`, and applies `LOG_LEVEL` via
-`logLevelFromString()` and `DATA_MODE` via `parseDataMode()`. When no SD card is
-present the firmware logs a warning and continues with safe defaults (`INFO` / `NC`).
+`applyConfig()` opens `/config/config.json` from the SD card and parses it with
+`ConfigParser::parse()` using the "Default & Override" pattern: an `AppConfig` struct
+is first populated with hardcoded safe defaults, then any field present in the JSON
+overrides its default. `logLevel` is applied via `logLevelFromString()` and `dataMode`
+via `parseDataMode()`. When the SD card is absent or the file is missing or corrupt,
+the firmware logs a warning and continues with safe defaults (`INFO` / `NC`).
 
 ---
 
-## Configuration: .env File
+## Configuration: config.json
 
-All behaviour and credential parameters are stored in a `.env` file on the SD
-card (`/config/.env` or root `.env`). Format:
+All behaviour and credential parameters are stored in `/config/config.json` on the
+SD card. A template is provided at `config.example.json` in the project root —
+copy it to the SD card and fill in real values before deploying.
 
+```json
+{
+  "dataMode": "NC",
+  "logLevel": "INFO",
+  "wifi": {
+    "ssid": "your_network",
+    "password": "secret"
+  },
+  "mqtt": {
+    "broker": "192.168.1.100",
+    "topic": "ht-sense/data"
+  },
+  "sync": {
+    "url": "https://example.com/api/upload",
+    "token": "your_token"
+  }
+}
 ```
-DATA_MODE=NC
-LOG_LEVEL=INFO
-WIFI_SSID=your_network
-WIFI_PASSWORD=secret
-MQTT_BROKER=192.168.1.100
-MQTT_TOPIC=ht-sense/data
-SYNC_URL=https://example.com/api/upload
-SYNC_TOKEN=your_token
-```
 
-Lines starting with `#` are comments. The `config_parser` module is responsible
-for reading and validating this file. Credentials are never echoed to logs.
+Fields may be omitted; the firmware keeps its hardcoded safe defaults for any
+missing key. The `config_parser` module is responsible for parsing this file.
+Credential fields (`wifi.password`, `sync.token`) are never echoed to logs.
 
-`LOG_LEVEL` accepts `DEBUG`, `INFO`, `WARN`, `ERROR`, or `NONE` (default: `INFO`).
-To change the log level, edit this key on the SD card — no firmware recompile needed.
+`logLevel` accepts `DEBUG`, `INFO`, `WARN`, `ERROR`, or `NONE` (default: `INFO`).
+To change the log level, edit the file on the SD card — no firmware recompile needed.
 
 ---
 

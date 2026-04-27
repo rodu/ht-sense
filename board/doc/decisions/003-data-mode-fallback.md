@@ -66,7 +66,7 @@ accumulated during the outage (this is the delta-sync design of those modes).
 
 **Why does UNKNOWN fall back to NC rather than LS?**
 
-`UNKNOWN` means the `DATA_MODE` value in `.env` could not be parsed. The user's
+`UNKNOWN` means the `dataMode` value in `config.json` could not be parsed. The user's
 intent is not known. In this case, collecting data to SD under an unknown
 configuration risks filling the SD card unexpectedly. NC is the safer default:
 it does nothing harmful, and a warning is logged so the operator can fix the
@@ -80,7 +80,7 @@ configuration.
   when a network connectivity change is detected, not when entering the loop.
 - When connectivity is restored, the system must switch back to the originally
   configured mode (not stay permanently in LS). The active mode variable in
-  `main.cpp` tracks the current effective mode; the configured mode from `.env`
+  `main.cpp` tracks the current effective mode; the configured mode from `config.json`
   must be kept separately so it can be restored.
 - `RT` mode's offline buffer (LS fallback) means the SD card must be available
   even in `RT` mode during outages. The hardware initialisation must account for

@@ -62,7 +62,7 @@ public:
 
 extern Logger Log;  // global instance
 
-// Parse a LOG_LEVEL string from .env config into a LogLevel value.
+// Parse a logLevel string from config.json into a LogLevel value.
 // Accepted strings (exact, uppercase): DEBUG, INFO, WARN, ERROR, NONE.
 // Returns LogLevel::INFO for null, empty, or unrecognised input.
 LogLevel logLevelFromString(const char *str);
@@ -97,8 +97,8 @@ output target is used.
 
 ### In `setup()` (Arduino)
 
-The log level is read at startup from the `LOG_LEVEL` key in the `.env` file on
-the SD card via `config_parser`. `main.cpp` applies it with `logLevelFromString`:
+The log level is read at startup from the `logLevel` field in `/config/config.json`
+on the SD card via `config_parser`. `main.cpp` applies it with `logLevelFromString`:
 
 ```cpp
 #include "logger.h"
@@ -111,15 +111,15 @@ void setup() {
     Log.setSink([](const char *line) { Serial.println(line); });
     Log.setLevel(LogLevel::INFO); // default; overridden by applyConfig()
 
-    // applyConfig() reads .env from SD and calls:
-    //   Log.setLevel(logLevelFromString(valueBuf));
+    // applyConfig() reads config.json from SD and calls:
+    //   Log.setLevel(logLevelFromString(cfg.logLevel));
     applyConfig();
 
     Log.info("HT-Sense starting");
 }
 ```
 
-To change the log level, edit `LOG_LEVEL` in `.env` on the SD card — no C++
+To change the log level, edit `logLevel` in `/config/config.json` on the SD card — no C++
 changes required. Valid values: `DEBUG`, `INFO`, `WARN`, `ERROR`, `NONE`.
 
 ### In any module

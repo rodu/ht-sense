@@ -9,7 +9,7 @@
 
 ## Purpose
 
-Parses the `DATA_MODE` value from the `.env` configuration file and provides
+Parses the `dataMode` value from the `config.json` configuration file and provides
 helper predicates that let the rest of the firmware ask capability questions
 ("does this mode write to SD?") rather than branching on enum values directly.
 
@@ -66,8 +66,8 @@ const char *dataModeToString(DataMode mode);
 ## Parsing Rules
 
 - Input must be **exact and uppercase**: `"LS"` parses; `"ls"` and `"Ls"` do not.
-- Whitespace is **not trimmed** by this module. Trimming is the `config_parser`
-  module's responsibility.
+- Whitespace is **not trimmed** by this module. Trimming is ArduinoJson's
+  responsibility during JSON parsing.
 - `nullptr` and empty string both return `DataMode::UNKNOWN`.
 
 ---
