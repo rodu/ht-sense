@@ -53,6 +53,15 @@ Two environments are defined in `platformio.ini`:
 - `native` — runs host-side tests for pure C++ logic (no Arduino dependency). Use for all modules in `lib/`. Run with `pio test -e native`.
 - `uno_r4_wifi` — runs on-board tests via serial for hardware-facing code. Run with `pio test -e uno_r4_wifi`.
 
+## C++ Standard
+
+- **All code must target C++17 or higher.**
+- Use C++17 features freely: structured bindings, `if constexpr`, `std::optional`, `std::string_view`, inline variables, fold expressions, etc.
+- The `native` environment is built with `-std=gnu++17`. The `uno_r4_wifi` environment is also built with `-std=gnu++17` (Renesas-RA toolchain supports it).
+- Avoid C++14-or-earlier idioms when a cleaner C++17 equivalent exists.
+- Do not use features from C++20 or later without first verifying toolchain support.
+- **Embedded size caution:** Some C++17 stdlib types (`std::optional`, `std::variant`, `std::any`) can introduce non-trivial code size or implicit heap allocation. Prefer `std::string_view` and `if constexpr` freely; use `std::optional` with care; avoid `std::variant` and `std::any` unless the flash/RAM overhead has been verified as acceptable. Flag any use of these types during code review.
+
 ### Module Responsibilities
 
 | Module | Responsibility |
