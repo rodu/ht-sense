@@ -3,19 +3,28 @@
 #include <string.h>
 
 // ---------------------------------------------------------------------------
-// defaultConfig
+// Default configuration values — edit here only.
+// constexpr allows the compiler to place this in read-only flash (ROM),
+// keeping it out of precious RAM on embedded targets.
 // ---------------------------------------------------------------------------
+
+namespace
+{
+  constexpr AppConfig kDefaultConfig = {
+      "NC",            // dataMode      — NC | LS | SS | RT | LSRT | SSRT
+      "INFO",          // logLevel      — DEBUG | INFO | WARN | ERROR | NONE
+      "",              // wifiSsid      — any string (network SSID)
+      "",              // wifiPassword  — any string (sensitive — never log)
+      "",              // mqttBroker    — hostname or IP address
+      "ht-sense/data", // mqttTopic     — any valid MQTT topic string
+      "",              // syncUrl       — any valid HTTP/HTTPS URL
+      "",              // syncToken     — any string (sensitive — never log)
+  };
+} // namespace
 
 AppConfig defaultConfig()
 {
-  AppConfig cfg = {}; // zero-initialise every char array field
-
-  strncpy(cfg.dataMode, "NC", sizeof(cfg.dataMode) - 1);
-  strncpy(cfg.logLevel, "INFO", sizeof(cfg.logLevel) - 1);
-  // wifiSsid, wifiPassword, mqttBroker, syncUrl, syncToken left as ""
-  strncpy(cfg.mqttTopic, "ht-sense/data", sizeof(cfg.mqttTopic) - 1);
-
-  return cfg;
+  return kDefaultConfig;
 }
 
 // ---------------------------------------------------------------------------
