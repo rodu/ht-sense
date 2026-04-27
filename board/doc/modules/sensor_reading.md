@@ -1,6 +1,6 @@
 # Module: sensor_reading
 
-**Location:** `lib/sensor_reading/`
+**Location:** `include/`
 **Files:** `sensor_reading.h` (header-only)
 **Environment:** native + uno_r4_wifi (no Arduino dependency)
 **Tests:** none — the struct has no logic; it is validated indirectly by all

@@ -22,9 +22,10 @@ board/
   platformio.ini          # Build & test environments (uno_r4_wifi, native)
   src/
     main.cpp              # Thin entry point — wires modules, owns setup/loop
+  include/
+    sensor_reading.h      # Cross-cutting: shared SensorReading struct
   lib/
     logger/               # Cross-cutting: allocation-free serial logger
-    sensor_reading/       # Cross-cutting: shared SensorReading struct
     data_mode/            # Parse DATA_MODE; compute capability flags
     nc_handler/           # NC mode — discard readings, log, count
     file_naming/          # Generate 8.3-safe SD paths from timestamps

@@ -8,14 +8,14 @@ environment data.
 ```
 board/
   platformio.ini
+  include/
+    sensor_reading.h     # Cross-cutting: shared SensorReading struct (header-only)
   src/
     main.cpp              # Thin entry point — wires modules, no logic
   lib/
     logger/               # Cross-cutting: allocation-free serial logger
       logger.h
       logger.cpp
-    sensor_reading/       # Cross-cutting: shared SensorReading struct (header-only)
-      sensor_reading.h
     data_mode/
       data_mode.h
       data_mode.cpp

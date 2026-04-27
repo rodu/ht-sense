@@ -29,7 +29,7 @@ usage examples, and what tests cover it.
 | Document | Module |
 |---|---|
 | [modules/logger.md](modules/logger.md) | `lib/logger` — allocation-free serial logger |
-| [modules/sensor_reading.md](modules/sensor_reading.md) | `lib/sensor_reading` — shared `SensorReading` struct |
+| [modules/sensor_reading.md](modules/sensor_reading.md) | `include/sensor_reading.h` — shared `SensorReading` struct |
 | [modules/data_mode.md](modules/data_mode.md) | `lib/data_mode` — data mode parsing, capability flags, offline fallback |
 | [modules/nc_handler.md](modules/nc_handler.md) | `lib/nc_handler` — NC mode handler |
 
