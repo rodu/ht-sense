@@ -1,30 +1,83 @@
 #pragma once
 #include <stddef.h>
+#include <stdint.h>
 
 /**
- * Parser for .env-style key=value configuration text.
+ * Flat struct holding all application configuration parameters.
  *
- * Accepts a null-terminated buffer containing one key=value pair per line.
- * Lines beginning with '#' are treated as comments and are skipped.
- * Empty lines are ignored.
- * Key matching is exact and case-sensitive.
+ * All fields are null-terminated C strings. Always initialise from
+ * defaultConfig() before attempting to load from storage so that safe
+ * values are in place even when the SD card is absent or the file is corrupt.
+ */
+struct AppConfig
+{
+  char dataMode[8];      ///< "NC" | "LS" | "SS" | "RT" | "LSRT" | "SSRT"
+  char logLevel[8];      ///< "DEBUG" | "INFO" | "WARN" | "ERROR" | "NONE"
+  char wifiSsid[64];     ///< wifi.ssid
+  char wifiPassword[64]; ///< wifi.password  (never log this field)
+  char mqttBroker[64];   ///< mqtt.broker (hostname or IP)
+  char mqttTopic[64];    ///< mqtt.topic
+  char syncUrl[128];     ///< sync.url
+  char syncToken[64];    ///< sync.token (never log this field)
+};
+
+/**
+ * Returns an AppConfig pre-populated with safe, hardcoded defaults.
+ * Call this before loadConfig() so the board continues to operate if
+ * the SD card is absent or the JSON file is corrupt.
+ */
+AppConfig defaultConfig();
+
+/**
+ * JSON-based configuration parser.
  *
- * No heap allocation is used; output is written into caller-supplied buffers.
+ * Uses the "Default & Override" pattern:
+ *   1. Populate cfg with defaultConfig().
+ *   2. Call parse() to overlay only the fields present in the JSON.
+ *
+ * Config file format — /config/config.json on the SD card:
+ * @code
+ * {
+ *   "dataMode": "NC",
+ *   "logLevel": "INFO",
+ *   "wifi":  { "ssid": "...", "password": "..." },
+ *   "mqtt":  { "broker": "192.168.1.1", "topic": "ht-sense/data" },
+ *   "sync":  { "url": "https://...", "token": "..." }
+ * }
+ * @endcode
+ *
+ * Integrity is verified externally: compute crc32() over the raw JSON text
+ * and compare it with the hex value stored in /config/config.crc before
+ * calling parse(). If the CRC does not match, discard the buffer and keep
+ * the defaults.
  */
 class ConfigParser
 {
 public:
   /**
-   * Search text for a line matching KEY=value and copy the value.
+   * Parse a JSON config buffer, overriding fields present in the document.
    *
-   * @param text     Null-terminated key=value text. May be nullptr or empty.
-   * @param key      Key to search for (case-sensitive, without trailing '=').
-   * @param out_buf  Buffer to receive the null-terminated value string.
-   * @param out_len  Size of out_buf in bytes (must be >= 1).
-   * @returns        true if the key was found and the value copied;
-   *                 false if the key was not found or inputs are invalid.
-   *                 When false, out_buf is not modified.
+   * @param jsonText  Pointer to the JSON text (need not be null-terminated
+   *                  beyond @p len bytes).
+   * @param len       Number of bytes to parse.
+   * @param cfg       Config struct to update in place.
+   * @returns         true  – JSON was valid and at least one field applied.
+   *                  false – input was null/empty or JSON could not be parsed.
    */
-  bool findValue(const char *text, const char *key,
-                 char *out_buf, size_t out_len) const;
+  bool parse(const char *jsonText, size_t len, AppConfig &cfg) const;
+
+  /**
+   * Compute a CRC32 (ISO 3309 / PKZIP) checksum over a data buffer.
+   *
+   * Use this to verify a config file's integrity before parsing:
+   *   1. Read the raw JSON bytes.
+   *   2. Compute crc32() over those bytes.
+   *   3. Compare with the 8-digit hex value stored in config.crc.
+   *   4. Call parse() only if they match.
+   *
+   * @param data  Pointer to the data buffer (may be nullptr when len == 0).
+   * @param len   Number of bytes to process.
+   * @returns     CRC32 value.
+   */
+  static uint32_t crc32(const uint8_t *data, size_t len);
 };
