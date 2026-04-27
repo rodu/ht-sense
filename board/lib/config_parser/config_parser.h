@@ -1,6 +1,5 @@
 #pragma once
 #include <stddef.h>
-#include <stdint.h>
 
 /**
  * Flat struct holding all application configuration parameters.
@@ -45,11 +44,6 @@ AppConfig defaultConfig();
  *   "sync":  { "url": "https://...", "token": "..." }
  * }
  * @endcode
- *
- * Integrity is verified externally: compute crc32() over the raw JSON text
- * and compare it with the hex value stored in /config/config.crc before
- * calling parse(). If the CRC does not match, discard the buffer and keep
- * the defaults.
  */
 class ConfigParser
 {
@@ -65,19 +59,4 @@ public:
    *                  false – input was null/empty or JSON could not be parsed.
    */
   bool parse(const char *jsonText, size_t len, AppConfig &cfg) const;
-
-  /**
-   * Compute a CRC32 (ISO 3309 / PKZIP) checksum over a data buffer.
-   *
-   * Use this to verify a config file's integrity before parsing:
-   *   1. Read the raw JSON bytes.
-   *   2. Compute crc32() over those bytes.
-   *   3. Compare with the 8-digit hex value stored in config.crc.
-   *   4. Call parse() only if they match.
-   *
-   * @param data  Pointer to the data buffer (may be nullptr when len == 0).
-   * @param len   Number of bytes to process.
-   * @returns     CRC32 value.
-   */
-  static uint32_t crc32(const uint8_t *data, size_t len);
 };

@@ -220,82 +220,6 @@ void test_parse_long_value_truncated_safely()
 }
 
 // ---------------------------------------------------------------------------
-// crc32() — known test vectors
-// ---------------------------------------------------------------------------
-
-void test_crc32_empty_buffer_returns_zero()
-{
-  // CRC32 of zero bytes: ~0xFFFFFFFF = 0x00000000
-  TEST_ASSERT_EQUAL_UINT32(0x00000000u, ConfigParser::crc32(nullptr, 0));
-}
-
-void test_crc32_standard_test_vector()
-{
-  // CRC32 of ASCII "123456789" is 0xCBF43926 per ISO 3309.
-  const uint8_t data[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
-  TEST_ASSERT_EQUAL_UINT32(0xCBF43926u, ConfigParser::crc32(data, sizeof(data)));
-}
-
-void test_crc32_single_byte()
-{
-  const uint8_t data[] = {0xAB};
-  uint32_t crc = ConfigParser::crc32(data, 1);
-  // Just verify it is deterministic (call twice, same result)
-  TEST_ASSERT_EQUAL_UINT32(crc, ConfigParser::crc32(data, 1));
-}
-
-void test_crc32_different_data_produces_different_checksum()
-{
-  const uint8_t dataA[] = {'a', 'b', 'c'};
-  const uint8_t dataB[] = {'a', 'b', 'd'};
-  TEST_ASSERT_NOT_EQUAL(ConfigParser::crc32(dataA, 3),
-                        ConfigParser::crc32(dataB, 3));
-}
-
-// ---------------------------------------------------------------------------
-// Integrity workflow — CRC mismatch detection
-// ---------------------------------------------------------------------------
-
-void test_integrity_matching_crc_allows_parse()
-{
-  const char *json = "{\"dataMode\":\"RT\"}";
-  size_t len = strlen(json);
-
-  uint32_t computed = ConfigParser::crc32(
-      reinterpret_cast<const uint8_t *>(json), len);
-
-  // Simulate the boot sequence: CRC matches → parse is attempted
-  AppConfig cfg = defaultConfig();
-  uint32_t stored = computed; // CRC file contains the correct value
-  bool crcOk = (stored == computed);
-  bool parsed = false;
-  if (crcOk)
-    parsed = parser.parse(json, len, cfg);
-
-  TEST_ASSERT_TRUE(parsed);
-  TEST_ASSERT_EQUAL_STRING("RT", cfg.dataMode);
-}
-
-void test_integrity_mismatching_crc_skips_parse()
-{
-  const char *json = "{\"dataMode\":\"SSRT\"}";
-  size_t len = strlen(json);
-
-  uint32_t computed = ConfigParser::crc32(
-      reinterpret_cast<const uint8_t *>(json), len);
-  uint32_t stored = computed ^ 0x1; // deliberately corrupt the stored CRC
-
-  // Simulate the boot sequence: CRC mismatch → parse is NOT attempted
-  AppConfig cfg = defaultConfig();
-  bool crcOk = (stored == computed);
-  if (crcOk)
-    parser.parse(json, len, cfg);
-
-  // cfg must still hold the defaults
-  TEST_ASSERT_EQUAL_STRING("NC", cfg.dataMode);
-}
-
-// ---------------------------------------------------------------------------
 // Test runner
 // ---------------------------------------------------------------------------
 
@@ -330,16 +254,6 @@ int main(int argc, char **argv)
   RUN_TEST(test_parse_partial_json_leaves_other_defaults);
   RUN_TEST(test_parse_unknown_fields_are_ignored);
   RUN_TEST(test_parse_long_value_truncated_safely);
-
-  // crc32()
-  RUN_TEST(test_crc32_empty_buffer_returns_zero);
-  RUN_TEST(test_crc32_standard_test_vector);
-  RUN_TEST(test_crc32_single_byte);
-  RUN_TEST(test_crc32_different_data_produces_different_checksum);
-
-  // Integrity workflow
-  RUN_TEST(test_integrity_matching_crc_allows_parse);
-  RUN_TEST(test_integrity_mismatching_crc_skips_parse);
 
   return UNITY_END();
 }

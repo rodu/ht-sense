@@ -16,10 +16,9 @@
 static DataMode activeMode = DataMode::NC;
 static NcHandler ncHandler;
 
-// Reads /config/config.json from the SD card, verifies its CRC32 against
-// /config/config.crc, then parses the JSON into an AppConfig struct using
-// the "Default & Override" pattern.  Falls back to safe defaults when the
-// SD card, the JSON file, or the CRC file is missing or corrupt.
+// Reads /config/config.json from the SD card and parses it into an AppConfig
+// struct using the "Default & Override" pattern.  Falls back to safe defaults
+// when the SD card or the JSON file is missing or corrupt.
 static void applyConfig()
 {
   AppConfig cfg = defaultConfig();
@@ -47,32 +46,6 @@ static void applyConfig()
                      sizeof(configText) - 1);
   configText[configLen] = '\0';
   f.close();
-
-  // Integrity check: compare CRC32 of the JSON text against config.crc.
-  File crcFile = SD.open("/config/config.crc");
-  if (crcFile)
-  {
-    char crcBuf[16] = {};
-    size_t crcRead = crcFile.read(reinterpret_cast<uint8_t *>(crcBuf),
-                                  sizeof(crcBuf) - 1);
-    crcBuf[crcRead] = '\0';
-    crcFile.close();
-
-    uint32_t stored = static_cast<uint32_t>(strtoul(crcBuf, nullptr, 16));
-    uint32_t computed = ConfigParser::crc32(
-        reinterpret_cast<const uint8_t *>(configText), configLen);
-
-    if (stored != computed)
-    {
-      Log.warn("Config: CRC mismatch — config.json may be corrupt, using defaults");
-      Log.setLevel(logLevelFromString(cfg.logLevel));
-      return;
-    }
-  }
-  else
-  {
-    Log.warn("Config: config.crc not found — skipping integrity check");
-  }
 
   // Parse JSON and override defaults with values from the file.
   ConfigParser parser;
