@@ -10,14 +10,14 @@
  */
 struct AppConfig
 {
-  char dataMode[8];      ///< "NC" | "LS" | "SS" | "RT" | "LSRT" | "SSRT"
-  char logLevel[8];      ///< "DEBUG" | "INFO" | "WARN" | "ERROR" | "NONE"
-  char wifiSsid[64];     ///< wifi.ssid
-  char wifiPassword[64]; ///< wifi.password  (never log this field)
-  char mqttBroker[64];   ///< mqtt.broker (hostname or IP)
-  char mqttTopic[64];    ///< mqtt.topic
-  char syncUrl[128];     ///< sync.url
-  char syncToken[64];    ///< sync.token (never log this field)
+  char dataMode[8];      ///< "NC" | "LS" | "SS" | "RT" | "LSRT" | "SSRT" — default: "NC"
+  char logLevel[8];      ///< "DEBUG" | "INFO" | "WARN" | "ERROR" | "NONE" — default: "INFO"
+  char wifiSsid[64];     ///< wifi.ssid — default: ""
+  char wifiPassword[64]; ///< wifi.password (never log this field) — default: ""
+  char mqttBroker[64];   ///< mqtt.broker (hostname or IP) — default: ""
+  char mqttTopic[64];    ///< mqtt.topic — default: "ht-sense/data"
+  char syncUrl[128];     ///< sync.url — default: ""
+  char syncToken[64];    ///< sync.token (never log this field) — default: ""
 };
 
 /**

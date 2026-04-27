@@ -25,6 +25,7 @@ void setup()
   // will override it with the LOG_LEVEL value from the config file on SD.
   Log.setSink([](const char *line)
               { Serial.println(line); });
+  // temporary default — overridden by LOG_LEVEL from config
   Log.setLevel(LogLevel::INFO);
 
   activeMode = loadConfig(SD_CS_PIN);
