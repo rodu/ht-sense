@@ -71,6 +71,7 @@ Two environments are defined in `platformio.ini`:
 - The `.env` file uses standard key-value pairs, one per line:
   ```
   DATA_MODE=LS
+  LOG_LEVEL=INFO
   WIFI_SSID=YOUR_SSID
   WIFI_PASSWORD=YOUR_PASSWORD
   MQTT_BROKER=192.168.1.100
@@ -78,6 +79,7 @@ Two environments are defined in `platformio.ini`:
   SYNC_URL=https://example.com/api/upload
   SYNC_TOKEN=your_api_token
   ```
+- `LOG_LEVEL` accepts `DEBUG`, `INFO`, `WARN`, `ERROR`, or `NONE` (default: `INFO`). It is applied at boot by `applyConfig()` in `main.cpp` using `logLevelFromString()` from `logger.h`.
 - Lines starting with `#` are treated as comments.
 - Credentials (WiFi, API tokens) are stored in plain text by default. For production, consider using EEPROM or encrypted storage for sensitive values.
 - On startup, the firmware loads the `.env` file and applies configuration. If the file is missing or malformed, the system falls back to safe defaults and logs an error.

@@ -106,7 +106,8 @@ Current wiring (as of initial implementation):
 // setup()
 Serial.begin(115200);
 Log.setSink([](const char *line) { Serial.println(line); });
-Log.setLevel(LogLevel::INFO);
+Log.setLevel(LogLevel::INFO); // default; overridden by applyConfig()
+applyConfig();                // reads SD .env → applies LOG_LEVEL + DATA_MODE
 
 // loop()
 SensorReading reading = { /* from sensor */ };
@@ -116,8 +117,10 @@ switch (activeMode) {
 }
 ```
 
-The `activeMode` variable will be loaded from the SD `.env` file via
-`config_parser` once that module is implemented. Until then it defaults to `NC`.
+`applyConfig()` opens `/.env` (falling back to `/config/.env`) from the SD card,
+passes the text to `ConfigParser::findValue`, and applies `LOG_LEVEL` via
+`logLevelFromString()` and `DATA_MODE` via `parseDataMode()`. When no SD card is
+present the firmware logs a warning and continues with safe defaults (`INFO` / `NC`).
 
 ---
 
@@ -128,6 +131,7 @@ card (`/config/.env` or root `.env`). Format:
 
 ```
 DATA_MODE=NC
+LOG_LEVEL=INFO
 WIFI_SSID=your_network
 WIFI_PASSWORD=secret
 MQTT_BROKER=192.168.1.100
@@ -138,6 +142,9 @@ SYNC_TOKEN=your_token
 
 Lines starting with `#` are comments. The `config_parser` module is responsible
 for reading and validating this file. Credentials are never echoed to logs.
+
+`LOG_LEVEL` accepts `DEBUG`, `INFO`, `WARN`, `ERROR`, or `NONE` (default: `INFO`).
+To change the log level, edit this key on the SD card — no firmware recompile needed.
 
 ---
 

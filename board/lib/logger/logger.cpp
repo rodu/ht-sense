@@ -28,3 +28,20 @@ void Logger::debug(const char *msg) { emit(LogLevel::DEBUG, "[DEBUG]", msg); }
 void Logger::info(const char *msg) { emit(LogLevel::INFO, "[INFO]", msg); }
 void Logger::warn(const char *msg) { emit(LogLevel::WARN, "[WARN]", msg); }
 void Logger::error(const char *msg) { emit(LogLevel::ERROR, "[ERROR]", msg); }
+
+LogLevel logLevelFromString(const char *str)
+{
+  if (str == nullptr || str[0] == '\0')
+    return LogLevel::INFO;
+  if (strcmp(str, "DEBUG") == 0)
+    return LogLevel::DEBUG;
+  if (strcmp(str, "INFO") == 0)
+    return LogLevel::INFO;
+  if (strcmp(str, "WARN") == 0)
+    return LogLevel::WARN;
+  if (strcmp(str, "ERROR") == 0)
+    return LogLevel::ERROR;
+  if (strcmp(str, "NONE") == 0)
+    return LogLevel::NONE;
+  return LogLevel::INFO; // unrecognised: safe default
+}

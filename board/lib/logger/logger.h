@@ -76,3 +76,10 @@ private:
  * Configure once in setup(); use from any translation unit via #include "logger.h".
  */
 extern Logger Log;
+
+/**
+ * Parse a LOG_LEVEL string from .env configuration into a LogLevel value.
+ * Accepted strings (exact, uppercase): DEBUG, INFO, WARN, ERROR, NONE.
+ * Returns LogLevel::INFO for null, empty, or unrecognised input.
+ */
+LogLevel logLevelFromString(const char *str);

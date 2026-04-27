@@ -198,6 +198,52 @@ void test_sink_called_exactly_once_per_log_call()
 }
 
 // ---------------------------------------------------------------------------
+// logLevelFromString — parse .env LOG_LEVEL strings
+// ---------------------------------------------------------------------------
+
+void test_logLevelFromString_debug()
+{
+  TEST_ASSERT_EQUAL(LogLevel::DEBUG, logLevelFromString("DEBUG"));
+}
+
+void test_logLevelFromString_info()
+{
+  TEST_ASSERT_EQUAL(LogLevel::INFO, logLevelFromString("INFO"));
+}
+
+void test_logLevelFromString_warn()
+{
+  TEST_ASSERT_EQUAL(LogLevel::WARN, logLevelFromString("WARN"));
+}
+
+void test_logLevelFromString_error()
+{
+  TEST_ASSERT_EQUAL(LogLevel::ERROR, logLevelFromString("ERROR"));
+}
+
+void test_logLevelFromString_none()
+{
+  TEST_ASSERT_EQUAL(LogLevel::NONE, logLevelFromString("NONE"));
+}
+
+void test_logLevelFromString_unknown_returns_info()
+{
+  TEST_ASSERT_EQUAL(LogLevel::INFO, logLevelFromString("VERBOSE"));
+  TEST_ASSERT_EQUAL(LogLevel::INFO, logLevelFromString("debug")); // case-sensitive
+  TEST_ASSERT_EQUAL(LogLevel::INFO, logLevelFromString("5"));
+}
+
+void test_logLevelFromString_empty_returns_info()
+{
+  TEST_ASSERT_EQUAL(LogLevel::INFO, logLevelFromString(""));
+}
+
+void test_logLevelFromString_null_returns_info()
+{
+  TEST_ASSERT_EQUAL(LogLevel::INFO, logLevelFromString(nullptr));
+}
+
+// ---------------------------------------------------------------------------
 // Level changes take effect immediately (no buffering of level changes)
 // ---------------------------------------------------------------------------
 
@@ -247,6 +293,16 @@ int main()
   RUN_TEST(test_long_message_is_truncated_safely);
   RUN_TEST(test_sink_called_exactly_once_per_log_call);
   RUN_TEST(test_level_change_takes_effect_immediately);
+
+  // logLevelFromString
+  RUN_TEST(test_logLevelFromString_debug);
+  RUN_TEST(test_logLevelFromString_info);
+  RUN_TEST(test_logLevelFromString_warn);
+  RUN_TEST(test_logLevelFromString_error);
+  RUN_TEST(test_logLevelFromString_none);
+  RUN_TEST(test_logLevelFromString_unknown_returns_info);
+  RUN_TEST(test_logLevelFromString_empty_returns_info);
+  RUN_TEST(test_logLevelFromString_null_returns_info);
 
   return UNITY_END();
 }
